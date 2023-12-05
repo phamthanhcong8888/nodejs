@@ -1,7 +1,9 @@
 const http = require('http')
 const port = process.env.PORT || 3000
 const server = http.createServer((req,res) => {
+    console.log(req.url)
     const path = req.url.replace(/\/?(?:\?.*)?$/, '').toLowerCase()
+    console.log(path)
     switch(path) {
         case '':
             res.writeHead(200, { 'Content-Type': 'text/plain' })

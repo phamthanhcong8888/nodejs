@@ -2,7 +2,7 @@ const http = require('http')
 const fs = require('fs')
 const port = process.env.PORT || 3000
 
-function serverStaticFile(res, path, contentType, responseCode = 200) {
+function serveStaticFile(res, path, contentType, responseCode = 200) {
     fs.readFile(__dirname + path, (err, data) =>{
         if(err) {
             res.writeHead(500, { 'Content-Type': 'text/plain'})
