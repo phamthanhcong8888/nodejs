@@ -1,0 +1,135 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <title>Title</title>
+    <script>
+
+        function loadTutorial() {
+            fetch("http://localhost:8083/api/products")
+
+                
+                .then(response => response.json())
+                .then(json => {
+
+                    
+                    let li = `<tr><th>ID</th><th>ProductCode</th><th>ProductName</th><th>ProductOriginPrice</th><th>Quantity</th><th>ProductStoreCode</th><th>Action</th></tr>`;
+
+                    
+                    json.forEach(product => {
+                        li += `<tr>
+                            <td>${product.id} </td>
+                            <td>${product.ProductCode} </td>
+                            <td>${product.ProductName}</td>
+                            <td>${product.ProductOriginPrice}</td>
+                            <td>${product.Quantity}</td>
+                            <td>${product.ProductStoreCode}</td>
+                            <td><a href="javascript:void(0);" onclick="deleteTutorial(${product.id})">Delete</a></td>
+                        </tr>`;
+                    });
+
+                    document.getElementById("products").innerHTML = li;
+                });
+        }
+
+        function deleteTutorial(id) {
+                fetch(`http://localhost:8083/api/products/${id}`, {
+                    method: "DELETE"
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data.message);
+                    loadTutorial(); 
+                })
+                .catch(error => {
+                    console.error("Error deleting products:", error);
+                });
+        }
+
+        function submitForm(e) {
+            e.preventDefault();
+            
+
+            var ProductCode =  document.getElementById('ProductCode').value;
+            var ProductName =  document.getElementById('ProductName').value;
+            var ProductOriginPrice =  document.getElementById('ProductOriginPrice').value;
+            var Quantity =  document.getElementById('Quantity').value;
+            var ProductStoreCode =  document.getElementById('ProductStoreCode').value;
+
+            const body = {
+                ProductCode : ProductCode,
+                ProductName : ProductName,
+                ProductOriginPrice : ProductOriginPrice,
+                Quantity : Quantity,
+                ProductStoreCode : ProductStoreCode
+            }
+
+            fetch("http://localhost:8083/api/products", {
+                method: "POST",
+                body: JSON.stringify( body ),
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+            })
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error("network returns error");
+                    }
+                    return response.json();
+                })
+                .then((resp) => {
+                    
+                    console.log("resp from server ", resp);
+                })
+                .catch((error) => {
+                    
+                    console.log("error ", error);
+                });
+        }
+
+
+
+    </script>
+</head>
+<body onload="loadTutorial()">
+
+
+<form id="myform">
+    <div class="form-group">
+        <label for="ProductCode">Product Code</label>
+        <input type="text" name="ProductCode" id="ProductCode" placeholder="Product Code">
+    </div>
+    <div class="form-group">
+        <label for="ProductName">Product Name:</label>
+        <input type="text" name="ProductName" id="ProductName"  placeholder="Product Name">
+    </div>
+    <div class="form-group">
+        <label for="ProductOriginPrice">ProductOriginPrice</label>
+        <input type="text" name="ProductOriginPrice" id="ProductOriginPrice" placeholder="Product Origin Price">
+    </div>
+    <div class="form-group">
+        <label for="Quantity">Quantity</label>
+        <input type="text" name="Quantity" id="Quantity" placeholder="Quantity">
+    </div>
+    <div class="form-group">
+        <label for="ProductStoreCode">ProductStoreCode</label>
+        <input type="text" name="ProductStoreCode" id="ProductStoreCode" placeholder="Product Store Code">
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+</div>
+
+<div>
+    <table border="1" id="products"></table>
+</div>
+
+<script>
+    var myform = document.getElementById("myform");
+    myform.addEventListener("submit", submitForm);
+</script>
+
+</body>
+</html>
